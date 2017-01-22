@@ -13,6 +13,7 @@ from PIL import Image
 from scipy import ndimage
 import matplotlib.pyplot as plt
 from sklearn.utils import shuffle
+from sklearn.linear_model import LogisticRegression
 
 
 def extract_data(fileloc):
@@ -133,33 +134,7 @@ def merge_datasets(pickle_files, train_size, valid_size=0):
     
   return valid_dataset, valid_labels, train_dataset, train_labels
 
-if __name__ == '__main__':
-    path = 'E:/Deep learning/notMNIST dataset/'
-    filepath = path + 'notMNIST_large.tar.gzip'
-#    extract_data(filepath)
-    train_folder, test_folder = get_folder(path) #step 1
-#    plot_examples(train_folder) #see example of the dataset
-
-#     step 2
-    train_datasets = maybe_pickle(train_folder, 45000)
-    test_datasets = maybe_pickle(test_folder, 1800)
-    
-#    step 3
-    train_size, valid_size, test_size = 32000, 12000, 10000    
-    valid_dataset, valid_labels, train_dataset, train_labels = \
-    merge_datasets(train_datasets, train_size, valid_size)
-    _, _, test_dataset, test_labels = merge_datasets(test_datasets, test_size)
-    
-    print('Training:', train_dataset.shape, train_labels.shape)
-    print('Validation:', valid_dataset.shape, valid_labels.shape)
-    print('Testing:', test_dataset.shape, test_labels.shape)
-    
-    #step 4
-    train_datasets, train_labels = shuffle(train_dataset, train_labels)
-    train_datasets, train_labels = shuffle(test_dataset, test_labels)
-    train_datasets, train_labels = shuffle(valid_dataset, valid_labels)
-    
-    #step 5 - save to pickle file
+def save_datapickle(train_dataset, train_labels, valid_dataset, valid_labels, test_dataset, test_labels):
     pickle_file = 'notMNIST.pickle'
 
     try:
@@ -180,7 +155,47 @@ if __name__ == '__main__':
     except Exception as e:
       print('Unable to save data to', pickle_file, ':', e)
       raise
-      
+
+if __name__ == '__main__':
+    path = 'E:/Deep learning/notMNIST dataset/'
+    filepath = path + 'notMNIST_large.tar.gzip'
+    
+#    step 1
+#    extract_data(filepath)
+    train_folder, test_folder = get_folder(path) 
+#    plot_examples(train_folder) #see example of the dataset
+
+#     step 2
+    train_datasets = maybe_pickle(train_folder, 45000)
+    test_datasets = maybe_pickle(test_folder, 1800)
+    
+#    step 3
+    train_size, valid_size, test_size = 200000, 10000, 18724    
+    valid_dataset, valid_labels, train_dataset, train_labels = \
+    merge_datasets(train_datasets, train_size, valid_size)
+    _, _, test_dataset, test_labels = merge_datasets(test_datasets, test_size)
+    
+    print('Training:', train_dataset.shape, train_labels.shape)
+    print('Validation:', valid_dataset.shape, valid_labels.shape)
+    print('Testing:', test_dataset.shape, test_labels.shape)
+    
+    #step 4
+    train_dataset_shuffled, train_label_shuffled = shuffle(train_dataset, train_labels)
+    valid_dataset_shuffled, valid_label_shuffled = shuffle(valid_dataset, valid_labels)
+    test_dataset_shuffled, test_label_shuffled = shuffle(test_dataset, test_labels)    
+    
+    #step 5 - save to pickle file
+    save_datapickle(train_dataset_shuffled, train_label_shuffled, \
+                     valid_dataset_shuffled, valid_label_shuffled, \
+                     test_dataset_shuffled, test_label_shuffled)
+    
+    #step 6 - test training with Logistic Regression
+#    lr = LogisticRegression()
+#    train = train_datasets.reshape(train_size, 28*28)
+#    test = test_datasets.reshape(test_size, 28*28)
+#    lr.fit(train, train_labels)
+#    print (lr.score(test, test_labels)) #accuracy : 0.89000000000000001
+    
     
     
     
