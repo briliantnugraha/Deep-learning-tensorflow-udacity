@@ -68,7 +68,7 @@ if __name__ == '__main__':
             tf.Variable( tf.zeros([num_labels]) ) ]
         #train logits
         logits = MLP(tf_train_dataset, W, b, len(W), activation_func)
-        
+        logits = tf.nn.dropout(logits, 0.5) #adding dropout
         #loss function with L2 regularization
         beta = 5e-4
         lossL2 = lossL2(W, beta)

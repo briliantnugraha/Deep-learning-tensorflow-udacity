@@ -9,9 +9,6 @@ import numpy as np
 
 def L2_reg(W, beta = 1e-3):
     return beta * (W**2) / 2
-    
-def dropout(X,W):
-    pass
 
 def accuracy(prediction, labels):
     tot = np.sum(np.argmax(prediction, 1) == np.argmax(labels, 1))
